@@ -1,0 +1,67 @@
+<script type="text/javascript">
+    RED.nodes.registerType('finish',{
+        category: 'rasaas',
+        color: '#baaff9',
+        defaults: {
+            name: {value:""}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "font-awesome/fa-sign-out",
+        align: 'right',
+        label: function() {
+            return this.name||"finish";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="finish">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i>name</label>
+        <input type="text" id="node-input-name" placeholder="name">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="finish">
+    <p>Assembles a HTTP response for a Rasa custom action request</p>
+<h3>Inputs</h3>
+<dl class="message-properties">
+    <dt>flow.req  <span class="property-type">object</span></dt>
+    <dd>a HTTP request object from a <code>HTTP in</code> node</dd>
+    <dt>flow.res  <span class="property-type">object</span></dt>
+    <dd>a HTTP response object from a <code>HTTP in</code> node</dd>
+    <dt>msg.responses  <span class="property-type">object</span></dt>
+    <dd>an responses object with Rasa responses</dd>
+    <dt>msg.events  <span class="property-type">object</span></dt>
+    <dd>an events object with Rasa events</dd>
+</dl>
+
+<h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>msg.payload
+            <span class="property-type">object</span>
+        </dt>
+        <dd>responses and events as a response to a Rasa custom action request   </dd>
+        <dt>msg.req
+            <span class="property-type">object</span>
+        </dt>
+        <dd>a HTTP request object from  <code>HTTP in</code> node hat a  <code>HTTP out</code> 
+            needs for sending  a HTTP response</dd>
+        <dt>msg.res
+            <span class="property-type">object</span>
+        </dt>
+        <dd>a HTTP response object from <code>HTTP in</code> node that a  <code>HTTP out</code> 
+            needs for sending  a HTTP response</dd>
+        </dl>
+<h3>Details</h3>
+<p>The node assembles JSON structures created by its counterpart <code>init</code> node 
+    to a valid HTTP response with a valid response for Rasa.
+<h3>References</h3>
+    <ul>
+        <li><a href="https://rasa.com/docs/action-server/http-api-spec">Rasa Action Server HTTP API</a></li>
+        <li><a href="https://github.com/weberi/node-red-contrib-rasa-actionserver.git">GitHub</a> - the nodes github repository</li>
+    </ul>
+</script>

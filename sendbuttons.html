@@ -1,0 +1,246 @@
+<script type="text/html" data-template-name="sendbuttons">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> name</label>
+        <input type="text" id="node-input-name" >
+    </div>
+    <div class="form-row">
+        <label for="node-input-position"><i class="fa fa-list-ol"></i> position</span></label>
+        <input type="text" id="node-input-position" style="width:70%">
+        <input type="hidden" id="node-input-positionType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-text"><i class="fa fa-comment-o"></i> text</span></label>
+        <input type="text" id="node-input-text" style="width:70%">
+        <input type="hidden" id="node-input-textType">
+    </div>
+
+    <div class="form-row">
+    <label for="node-input-addmode"><i class="fa fa-dot-circle-o"></i> add from msg</label>
+    
+    <span class="button-group">
+        <button type="button" id="no" class="red-ui-button toggle selected add-button-group">none</button>
+        <button type="button" id="before" class="red-ui-button toggle add-button-group">before</button>
+        <button type="button" id="after" class="red-ui-button toggle add-button-group">after</button>
+        </span><input type="hidden" id="node-input-addmode">
+    </div>
+
+    <div class="form-row node-input-button-container-row">
+        <ol id="node-input-button-container"></ol>
+    </div>
+
+
+</script>
+
+<script type="text/javascript">
+    (function () {
+        function clipValueLength(v) {
+            if (v.length > 15) {
+                return v.substring(0, 15) + "...";
+            }
+            return v;
+        }
+        function getValueLabel(v) {
+            return '"' + clipValueLength(v) + '"';
+        }
+    })
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('sendbuttons', {
+        color: "#baaff9",
+        category: 'rasaas',
+        defaults: {
+            name: { value: "" },
+            position: {
+                value: "0", 
+                validate: RED.validators.typedInput('positionType')
+            }, 
+            positionType: { value: 'num' },
+            text: {
+                value: "", 
+                validate: RED.validators.typedInput('textType')
+            }, 
+            textType: { value: 'str' },
+            addmode: { value: "no" },
+            buttons: { value: [{ title: "", "title-type": null, payload: "", "payload-type": null }] },
+        },
+        inputs: 1,
+        outputs: 1,
+
+        icon: "font-awesome/fa-commenting-o",
+        label: function () {
+            return this.name || "sendbuttons";
+        },
+        labelStyle: function () {
+            return this.name ? "node_label_italic" : "";
+        },
+
+        oneditprepare: function () {
+            var node = this;
+            var buttons = node.buttons;
+            var addmd = (node.addmode == "") ? addmd = "no" : addmd = node.addmode;
+
+            $('#node-input-position').typedInput({
+            default: '0',
+            typeField: $("#node-input-positionType"),
+            types: ['num']
+            });
+            $('#node-input-text').typedInput({
+            default: 'str',
+            typeField: $("#node-input-textType"),
+            types: ['str','msg']
+            });
+
+            $(".add-button-group").on("click", function () {
+                $(".add-button-group").removeClass("selected");
+                $(this).addClass("selected");
+                $("#node-input-addmode").val($(this).prop('id'));
+            });
+
+            $(".add-button-group").removeClass("selected");
+            if (addmd == "after") {
+                $("#after").addClass("selected");
+            } else if (addmd == "before") {
+                $("#before").addClass("selected");
+            } else if (addmd == "no") {
+                $("#no").addClass("selected");
+            }
+
+            $("#node-input-button-container").css('min-height', '100px').css('min-width', '450px').editableList({
+                addButton: true,
+                header: $("<div>").append($.parseHTML("<div style='width:65%; display: inline-grid'>Titel</div><div style='display: inline-grid'>Payload</div>")),
+
+                addItem: function (row, index, data) {
+                    var btn = {}
+                    if (data.hasOwnProperty("button")) {
+                        btn.title = data.button.title;
+                        btn["title-type"] = data.button["title-type"];
+                        btn.payload = data.button.payload;
+                        btn["payload-type"] = data.button["payload-type"];
+                    } else {
+                        btn.title = "";
+                        btn.payload = "";
+                        btn["title-type"] = "str";
+                        btn["payload-type"] = "str";
+                    }
+
+                    row.css({
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap'
+                    });
+
+                    var titleField = $('<title/>', { class: "node-input-button-title", type: "text", style: "margin-left: 5px; width:200px;" }).appendTo(row).typedInput({ default: 'str', types: ['msg', 'str'] });
+                    titleField.typedInput('value', btn.title);
+                    titleField.typedInput('type', btn["title-type"]);
+
+
+                    var payloadField = $('<payload/>', { class: "node-input-button-payload", type: "text", style: "width:200px; padding-right:10px; box-sizing:border-box;" }).appendTo(row).typedInput({ default: 'str', types: ['msg', 'str'] });
+                    payloadField.typedInput('type', btn["payload-type"]);
+                    payloadField.typedInput('value', btn.payload);
+
+                    var finalspan = $('<span/>', { style: "float: right;margin-top: 6px;" }).appendTo(row);
+                },
+
+                sortable: true,
+                removable: true
+            });
+
+            for (var i = 0; i < node.buttons.length; i++) {
+                var button = node.buttons[i];
+                $("#node-input-button-container").editableList('addItem', { button: button, i: i });
+            };
+        },
+
+        oneditsave: function () {
+            var node = this;
+            $("ol.node-input-button-container").editableList('height', '200px');
+            var bttns = $("#node-input-button-container").editableList('items');
+            node.buttons = [];
+            bttns.each(function (i) {
+
+                var btn = $(this);
+                var b = {};
+
+                b.title = btn.find(".node-input-button-title").typedInput('value');
+                var titletype = btn.find(".node-input-button-title").typedInput('type');
+                b["title-type"] = titletype;
+                // b["title-type"] = btn.find(".node-input-button-titletype-value").typedInput('type');
+
+                b.payload = btn.find(".node-input-button-payload").typedInput('value');
+                // b["payload-type"] = btn.find(".node-input-button-payload-type").typedInput('type');
+                var payloadtype = btn.find(".node-input-button-payload").typedInput('type');
+                b["payload-type"] = payloadtype;
+                //b["payload-type"] = btn.find(".node-input-button-payload");
+
+                node.buttons.push(b);
+            });
+
+            node.addmode = $(".add-button-group.selected").prop('id');
+        },
+
+        oneditresize: function (size) {
+            var rows = $("#dialog-form>div:not(.node-input-button-container-row)");
+            var height = size.height;
+            for (var i = 0; i < rows.length; i++) {
+                height -= $(rows[i]).outerHeight(true);
+            }
+            var editorRow = $("#dialog-form>div.node-input-button-container-row");
+            height -= (parseInt(editorRow.css("marginTop")) + parseInt(editorRow.css("marginBottom")));
+            height += 16;
+            $("#node-input-button-container").editableList('height', height);
+        }
+    });
+
+</script>
+
+<script type="text/html" data-help-name="sendbuttons">
+    <p>Adds buttons for a button response.</p>
+<h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt class="optional">msg.payload.buttons
+            <span class="property-type">object</span>
+        </dt>
+        <dd> an array of objects <code>[{title:title, payload:payload}]</code>  </dd>
+
+        <dt>msg.responses
+            <span class="property-type">object</span>
+        </dt>
+        <dd> an array of response objects</dd>
+    </dl>
+
+<h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>msg.response  <span class="property-type">object</span></dt>
+        <dd>the new button declarations are inserted 
+            into the response indicated by <code> position </code> in <code>msg.responses</code></dd>
+    </dl>
+
+<h3>Details</h3>
+<p>The node adds additional buttons to the response that the action server will eventually return to Rasa. 
+    There are three options for specifying  buttons:
+    <ul>
+        <li> specify fixed button title and payload pairs in the node config</li>
+        <li> use the node config for specifying how to retrieve button title and payload pairs from the msg object of the flow</li>
+        <li>provide an array of <code>{title:title, payload:payload}</code> objects in the message payload </li>
+    </ul>
+
+<p>Oftentimes, the chatbot will want to utter a text message introducing and 
+    explaining the buttons. Therefore, the <code>sendbuttons</code> node allows providing a text message as well as buttons. </p>
+
+<p>The node expects an array <code>msg.responses</code>   of response objects
+initialized by an <code>init</code> node.   The <code>position</code> parameter 
+in the node config specifies the position of the response in the <code>msg.responses</code> 
+array. The node will insert as many response objects into the array 
+as are necessary to meet the specified position. </p> 
+
+If the <code>msg.responses</code> array already contains a response at the indicated position, 
+its text will be overwritten if the  node specifies a new text.  
+ Buttons that the node declares  will be added to  buttons that
+are already present in the response object at the given position. </p> 
+
+<h3>References</h3>
+    <ul>
+        <li><a href="https://rasa.com/docs/action-server/http-api-spec">Rasa Action Server HTTP API</a></li>
+        <li><a href="https://github.com/weberi/node-red-contrib-rasa-actionserver.git">GitHub</a> - the nodes github repository</li>
+    </ul>
+</script>

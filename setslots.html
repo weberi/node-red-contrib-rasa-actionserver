@@ -1,0 +1,157 @@
+<script type="text/html" data-template-name="setslots">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i>name</label>
+        <input type="text" id="node-input-name" >
+    </div>
+
+
+    <div class="form-row" id="node-once">
+        <label for="node-input-once">add from msg</label>
+        <input type="checkbox" id="node-input-addcheck" style="display:inline-block; width:15px; vertical-align:baseline;"> 
+    </div>
+
+    <div class="form-row node-input-slot-container-row">
+        <ol id="node-input-slot-container"></ol>
+    </div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('setslots',{
+        color: "#baaff9",   
+        category: 'rasaas',
+        defaults: {
+            name:           {value:""},
+            text:           {value:""},
+            addcheck:        {value:false},
+            slots: {value:[{slotname:"", "slotname-type":null, slotvalue:"", "slotvalue-type":null  }]},        
+        },
+        inputs: 1,
+        outputs: 1,
+   
+        icon: "font-awesome/fa-th-list",
+        label: function() {
+            return this.name||"setslots";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+
+        oneditprepare: function() {
+            var node = this;
+            var slots = node.slots;
+
+            $("#node-input-slot-container").css('min-height','100px').css('min-width','450px').editableList({
+                addslot: true,
+                header: $("<div>").append($.parseHTML("<div style='width:65%; display: inline-grid'>Slot Name</div><div style='display: inline-grid'>Slot Value</div>")),
+              
+                addItem: function(row, index, data) {
+                    var slt = {}  
+                    if (data.hasOwnProperty("slot"))  {
+                        slt.slotname = data.slot.slotname;
+                        slt["slotname-type"] = data.slot["slotname-type"]; 
+                        slt.slotvalue = data.slot.slotvalue;
+                        slt["slotvalue-type"] = data.slot["slotvalue-type"];
+                    } else  {
+                        slt.slotname = "";                      
+                        slt.slotvalue = "";
+                        slt["slotname-type"] = "str";                      
+                        slt["slotvalue-type"] = "str";
+                    }
+                    
+                    row.css({
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap'
+                    });
+                    
+                    var slotnameField = $('<slotname/>',{class:"node-input-slot-slotname",type:"text",style: "margin-left: 5px; width:200px;"}).appendTo(row).typedInput({default:'str',types:['msg','str']});
+                    slotnameField.typedInput('value', slt.slotname);
+                    slotnameField.typedInput('type',slt["slotname-type"]);
+ 
+                    var slotvalueField = $('<slotvalue/>',{class:"node-input-slot-slotvalue",type:"text",style:"width:200px; padding-right:10px; box-sizing:border-box;"}).appendTo(row).typedInput({default:'str',types:['msg','str']}); 
+                    slotvalueField.typedInput('type',slt["slotvalue-type"]);
+                    slotvalueField.typedInput('value', slt.slotvalue);  
+
+                    var finalspan = $('<span/>',{style:"float: right;margin-top: 6px;"}).appendTo(row);
+                },     
+
+                sortable: true,
+                removable: true
+            });
+
+            for (var i=0;i<node.slots.length;i++) {
+                var slot = node.slots[i];
+                $("#node-input-slot-container").editableList('addItem',{slot:slot,i:i});
+            };
+        },
+
+        oneditsave: function() {
+            var node = this;
+
+            $("ol.node-input-slot-container").editableList('height', '200px');
+            var slts = $("#node-input-slot-container").editableList('items');
+            node.slots = [];
+            slts.each(function(i) {
+                var slt = $(this);       
+                var s = {};      
+                s.slotname = slt.find(".node-input-slot-slotname").typedInput('value');
+                s["slotname-type"] = slt.find(".node-input-slot-slotname").typedInput('type');
+                s.slotvalue =  slt.find(".node-input-slot-slotvalue").typedInput('value'); 
+                s["slotvalue-type"] = slt.find(".node-input-slot-slotvalue").typedInput('type'); 
+                node.slots.push(s);
+            });
+        },
+
+        oneditresize: function(size) {     
+            var rows = $("#dialog-form>div:not(.node-input-slot-container-row)");
+            var height = size.height;
+            for (var i=0;i<rows.length;i++) {
+                height -= $(rows[i]).outerHeight(true);
+            }
+            var editorRow = $("#dialog-form>div.node-input-slot-container-row");
+            height -= (parseInt(editorRow.css("marginTop"))+parseInt(editorRow.css("marginBottom")));
+            height += 16;
+            $("#node-input-slot-container").editableList('height',height);
+        }
+    });
+
+</script>
+
+<script type="text/html" data-help-name="setslots">
+<p>Sets Rasa slots to specific values.     
+<h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>msg.payload.slots
+            <span class="property-type">object</span>
+        </dt>
+        <dd> an array of objects <code>[{slotname:slotname, slotvalue:slotvalue}]</code>  </dd>
+    </dl>
+
+<h3>Outputs</h3>
+    <dl class="message-properties">
+    <dt>msg.events <span class="property-type">object</span></dt>
+    <dd>an array of objects <code>[{"event":"slot","timestamp":date,"name":slotname ,"value":slotvalue}]</code></dd>
+</dl>
+
+
+<h3>Details</h3>
+<p>Rasa slots are set via events. This nodes takes slot names and slot values and generates events 
+    that set these slots to the values accordingly.</p>
+    There are three ways to provide slot names and values to the node:
+    <ul>
+        <li> specify fixed slot name and value pairs in the config of the node /li>
+        <li>  specify in the node config how to retrieve slot name and value pairs from the msg object of the flow</li>
+        <li>  provide an array of <code>{slotname:slotname, slotvalue:slotvalue} </code>objects in the message payload </li>
+    </ul>
+    <p>The node adds the events to the events list that was initialized by <code>init</code> node and is 
+        carried along  the flow as <code>msg.events</code>. 
+        The <code>finish</code> node will finally hand the events list over to Rasa chatbot. </p>
+    <p>There are no checks whether the slot names really exist in the Rasa domain or 
+        whether there are multiple slot setting events for one slot.</p>
+
+<h3>References</h3>
+    <ul>
+        <li><a href="https://rasa.com/docs/action-server/http-api-spec">Rasa Action Server HTTP API</a></li>
+        <li><a href="https://github.com/weberi/node-red-contrib-rasa-actionserver.git">GitHub</a> - the nodes github repository</li>
+    </ul>
+</script>
+

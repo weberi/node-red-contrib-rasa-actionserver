@@ -1,0 +1,75 @@
+<script type="text/javascript">
+    RED.nodes.registerType('init',{
+        category: 'rasaas',
+        color: '#baaff9',
+        defaults: {
+            name: {value:""}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "font-awesome/fa-sign-in",
+        label: function() {
+            return this.name||"init";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="init">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i>name</label>
+        <input type="text" id="node-input-name" placeholder="name">
+    </div>
+    
+</script>
+
+<script type="text/html" data-help-name="init">
+        <p>Initializes a response object for a Rasa custom action request.</p>
+    <h3>Inputs</h3>
+        <dl class="message-properties">
+            <dt>msg.payload
+                <span class="property-type">object</span>
+            </dt>
+            <dd> a Rasa request object to execute a custom action  </dd>
+            <dt>msg.req
+                <span class="property-type">object</span>
+            </dt>
+            <dd>a HTTP request object received by a <code>HTTP in</code> node</dd>
+            <dt>msg.res
+                <span class="property-type">object</span>
+            </dt>
+            <dd>a HTTP response object from a <code>HTTP in</code> node</dd>
+        </dl>
+    
+        <h3>Outputs</h3>
+                <dl class="message-properties">
+                     <dt>flow.req  <span class="property-type">object</span></dt>
+                     <dd>a HTTP request object from a <code>HTTP in</code> node</dd>
+                     <dt>flow.res  <span class="property-type">object</span></dt>
+                     <dd>a HTTP response object from a <code>HTTP in</code> node</dd>
+                     <dt>flow.domain  <span class="property-type">object</span></dt>
+                     <dd>a domain object that comes with a Rasa custom action request</dd>
+                     <dt>flow.tracker  <span class="property-type">object</span></dt>
+                     <dd>a tracker object that comes with a Rasa custom action request  </dd>
+                     <dt>msg.responses  <span class="property-type">object</span></dt>
+                     <dd>an empty responses object that will be filled with Rasa responses</dd>
+                     <dt>msg.events  <span class="property-type">object</span></dt>
+                     <dd>an empty events object that will be filled with Rasa events</dd>
+                     <dt>msg.slots  <span class="property-type">object</span></dt>
+                     <dd>an array of slot settings sent as part of  the Rasa custom action request</dd>
+                     <dt>msg.action  <span class="property-type">string</span></dt>
+                     <dd>the name of the action that Rasa requests the action server to execute </dd>
+                 </dl>
+    
+    <h3>Details</h3>
+    <p>The node initializes JSON structures and stores JSON structures into  flow context. 
+        The counterpart <code>finish</code> will retreive them and assemble a valid HTTP response 
+        and response for Rasa.
+    <h3>References</h3>
+        <ul>
+            <li><a href="https://rasa.com/docs/action-server/http-api-spec">Rasa Action Server HTTP API</a></li>
+            <li><a href="https://github.com/weberi/node-red-contrib-rasa-actionserver.git">GitHub</a> - the nodes github repository</li>
+        </ul>
+    </script>

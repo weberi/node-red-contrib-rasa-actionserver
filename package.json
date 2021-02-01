@@ -1,0 +1,31 @@
+{
+  "name": "node-red-contrib-rasa-actionserver",
+  "version": "1.0.1",
+  "description": "action server for rasa conversational assistants",
+  "scripts": {
+    "test": "echo \"no test specified\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/weberi/node-red-contrib-rasa-actionserver.git"
+  },
+  "keywords": [
+    "node-red",
+    "nodes",
+    "rasa",
+    "rasa chatbot",
+    "rasa action server"
+  ],
+  "author": "weberi",
+  "license": "Apache License 2.0",
+  "node-red": {
+    "nodes": {
+      "sendtext": "sendtext.js",
+      "sendbuttons": "sendbuttons.js",
+      "sendextra": "sendextra.js",
+      "setslots": "setslots.js",
+      "init": "init.js",
+      "finish": "finish.js"
+    }
+  }
+}

@@ -1,0 +1,102 @@
+<script type="text/javascript">
+    RED.nodes.registerType('sendtext',{
+        category: 'rasaas',
+        color: '#baaff9',
+
+        defaults: {
+            name: {value:""},
+            position: {
+                value: "0", 
+                validate: RED.validators.typedInput('positionType')
+            }, 
+            positionType: { value: 'num' },
+            text: {
+                value: "", 
+                validate: RED.validators.typedInput('textType')
+            }, 
+            textType: { value: 'str' }   
+        },
+        inputs:1,
+        outputs:1,
+        icon: "font-awesome/fa-comment-o",
+        label: function() {
+            return this.name||"sendtext";   
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            $('#node-input-position').typedInput({
+            default: 'num',
+            typeField: $("#node-input-positionType"),
+            types: ['num']
+            });
+            $('#node-input-text').typedInput({
+            default: 'str',
+            typeField: $("#node-input-textType"),
+            types: ['str','msg']
+            });
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="sendtext">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i>name</label>
+        <input type="text" id="node-input-name" placeholder="name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-position"><i class="fa fa-list-ol"></i> position</span></label>
+        <input type="text" id="node-input-position" style="width:70%">
+        <input type="hidden" id="node-input-positionType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-text"><i class="fa fa-comment-o"></i> text</span></label>
+        <input type="text" id="node-input-text" style="width:70%">
+        <input type="hidden" id="node-input-textType">
+    </div>
+</script>
+
+
+
+<script type="text/html" data-help-name="sendtext">
+    <p>Adds  a text response.</p>
+<h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt class="optional">msg.payload
+            <span <span class="property-type">object</span>
+        </dt>
+        <dd> may contain parts of the text response  </dd>
+
+        <dt>msg.responses
+            <span class="property-type">object</span>
+        </dt>
+        <dd> an array of response objects</dd>
+    </dl>
+
+<h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>msg.response <span class="property-type">object</span></dt>
+        <dd>the new text response is s inserted 
+            into the response indicated by <code> position </code> in <code>msg.responses</code></dd>
+         </dl>
+
+<h3>Details</h3>
+<p>The node adds a text response to the response indicated by the <code>position</code> pamareter in <code>responses</code>.
+    It expects an array of response objects <code>msg.responses</code>  
+    initialized by an <code>init</code> node which the action server will eventually return to Rasa.</p>
+    The node will insert as many responses into the array as is necessary to meet the specified position. 
+    If the responses array already contains a response at the indicated position, the node replaces its text response with 
+    the new text response. </p> 
+    
+    There are two options to provide a text response:
+    <ul>
+        <li> specify a fixed text in the config of the node</li>
+        <li> specify in the node config how to retrieve the text from <code>msg.payload</code> </li>
+    </ul>
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://rasa.com/docs/action-server/http-api-spec">Rasa Action Server HTTP API</a></li>
+        <li><a href="https://github.com/weberi/node-red-contrib-rasa-actionserver.git">GitHub</a> - the nodes github repository</li>
+    </ul>
+</script>
