@@ -3,20 +3,22 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,config);
         var node = this;
         node.on('input', function(msg, send, done) {
-
-            var flow = this.context().flow;
-
             var responses = msg.responses;
             var events = msg.events;
 
-            msg.payload = {};
-            msg.payload.events = events;
-            msg.payload.responses = responses;
-          
-            msg.res = flow.get('res');
-            msg.req = flow.get('req');
+            var flow = this.context().flow;
+            if (responses == undefined || events == undefined ||  flow.get('res') == undefined|| flow.get('req') == undefined) {
+                node.error("Not properly initialized. Make sure that the flow contains an Init node preceding this node.", msg)
+            } else {
+                msg.payload = {};
+                msg.payload.events = events;
+                msg.payload.responses = responses;
+            
+                msg.res = flow.get('res');
+                msg.req = flow.get('req');
 
-            node.send(msg);
+                node.send(msg);
+            }
         });
     }
     RED.nodes.registerType("finish",FinishNode);

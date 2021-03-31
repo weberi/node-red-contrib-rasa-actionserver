@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-rasa-actionserver",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "action server for rasa conversational assistants",
   "scripts": {
     "test": "echo \"no test specified\""

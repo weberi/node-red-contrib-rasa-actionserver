@@ -40,38 +40,41 @@ module.exports = function(RED) {
             }
     
         node.on('input', function(msg, send, done) {     
-            
-            var pos = Number(node.position);
-            var newtext;
-            if (node.text != "") {
-                newtext = prepValue(msg, node.text,  node.textType); 
-            };
-            var newimage;
-            if (node.image != "") {
-                    newimage = prepValue(msg, node.image,  node.imageType); 
-            };
-            var newattachment;
-            if (node.attachment != "") {
-                newattachment = prepValue(msg, node.attachment,  node.attachmentType); 
-            };
-          
             var responses = msg.responses;
+            if (responses == undefined) {
+                node.error("Not properly initialized. Make sure that the flow contains an Init node preceding this node.", msg)
+            } else {
+            
+                var pos = Number(node.position);
+                var newtext;
+                if (node.text != "") {
+                    newtext = prepValue(msg, node.text,  node.textType); 
+                };
+                var newimage;
+                if (node.image != "") {
+                        newimage = prepValue(msg, node.image,  node.imageType); 
+                };
+                var newattachment;
+                if (node.attachment != "") {
+                    newattachment = prepValue(msg, node.attachment,  node.attachmentType); 
+                };
 
-            padResponses(responses, pos);
-            var oldresponse = responses[pos];
-    
-            var updatedresponse = {
-                "text":     (node.text != "") ? newtext: oldresponse.text,
-                "buttons":  oldresponse.buttons,
-                "elements": oldresponse.elements,
-                "custom":   oldresponse.custom,
-                "template": oldresponse.template,
-                "image":    (node.image != "") ? newimage: oldresponse.image,
-                "attachment":(node.attachment != "") ? newattachment: oldresponse.attachment,
-            };
-            responses.splice(pos,1,updatedresponse);
-            msg.responses = responses;
-            node.send(msg);
+                padResponses(responses, pos);
+                var oldresponse = responses[pos];
+        
+                var updatedresponse = {
+                    "text":     (node.text != "") ? newtext: oldresponse.text,
+                    "buttons":  oldresponse.buttons,
+                    "elements": oldresponse.elements,
+                    "custom":   oldresponse.custom,
+                    "template": oldresponse.template,
+                    "image":    (node.image != "") ? newimage: oldresponse.image,
+                    "attachment":(node.attachment != "") ? newattachment: oldresponse.attachment,
+                };
+                responses.splice(pos,1,updatedresponse);
+                msg.responses = responses;
+                node.send(msg);
+            }
             });
         }
         RED.nodes.registerType("sendextra",SendExtraNode);

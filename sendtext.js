@@ -36,30 +36,33 @@ module.exports = function(RED) {
             }
     
     
-        node.on('input', function(msg, send, done) {         
-            var pos = Number(node.position);
-            var newtext;
-            if (node.text != "") {
-                newtext = prepValue(msg, node.text,  node.textType); 
-            };
-            
+        node.on('input', function(msg, send, done) {                     
             var responses = msg.responses;
-            padResponses(responses, pos);
-            
-            var oldresponse = responses[pos];
-    
-            var updatedresponse = {
-                "text":      (node.text != "") ? newtext: oldresponse.text,
-                "buttons":   oldresponse.buttons,
-                "elements":  oldresponse.elements,
-                "custom":    oldresponse.custom,
-                "template":  oldresponse.template,
-                "image":     oldresponse.image,
-                "attachment":oldresponse.attachment,
-            };
-            responses.splice(pos,1,updatedresponse);
-            msg.responses = responses;
-            node.send(msg);
+            if (responses == undefined) {
+                node.error("Not properly initialized. Make sure that the flow contains an Init node preceding this node.", msg)
+            } else {
+                var pos = Number(node.position);
+                var newtext;
+                if (node.text != "") {
+                    newtext = prepValue(msg, node.text,  node.textType); 
+                };
+
+                padResponses(responses, pos);
+                
+                var oldresponse = responses[pos];
+                var updatedresponse = {
+                    "text":      (node.text != "") ? newtext: oldresponse.text,
+                    "buttons":   oldresponse.buttons,
+                    "elements":  oldresponse.elements,
+                    "custom":    oldresponse.custom,
+                    "template":  oldresponse.template,
+                    "image":     oldresponse.image,
+                    "attachment":oldresponse.attachment,
+                };
+                responses.splice(pos,1,updatedresponse);
+                msg.responses = responses;
+                node.send(msg);
+            }
             });
         }
         RED.nodes.registerType("sendtext",SendTextNode);

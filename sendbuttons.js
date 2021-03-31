@@ -37,60 +37,64 @@ function SendButtonsNode(config) {
         return;
     }
 
-    node.on('input', function(msg, send, done) {    
-        var allbuttons = [];
-        var guibuttons = [];
-        var buttonsFromPayload = [];
-        
-        node.buttons.forEach(function(rawbutton) {
-            var bt = {
-                title:prepValue(msg,rawbutton.title, rawbutton["title-type"]),                 
-                payload:prepValue(msg,rawbutton.payload, rawbutton["payload-type"])
-            };
-            guibuttons.push(bt);
-        });
-
-        if (this.addmode == "no" || this.addmode == "none") {
-           allbuttons = allbuttons.concat(guibuttons);
-        } else {
-            buttonsFromPayload = RED.util.getMessageProperty(msg,"payload.buttons"); 
-        }
-
-        if (this.addmode == "before") { allbuttons = buttonsFromPayload.concat(guibuttons);}
-        if (this.addmode == "after")  { allbuttons = guibuttons.concat(buttonsFromPayload);}  
-
-        //var responses = [{"text":text,"buttons":bttns,"elements":[],"custom":{},"template":null,"image":null,"attachment":null}]     
-
-        // var oldresponses =  RED.util.getMessageProperty(msg,"responses");
-        // var oldresponse = RED.util.getMessageProperty(msg,"responses[0]");
-
-        var pos = Number(node.position);
-        var newtext;
-        if (node.text != "") {
-            newtext = prepValue(msg, node.text,  node.textType); 
-        };
-        
+    node.on('input', function(msg, send, done) {
         var responses = msg.responses;
-        padResponses(responses, pos);
+        if (responses == undefined) {
+            node.error("Not properly initialized. Make sure that the flow contains an Init node preceding this node.", msg)
+        } else {    
+            var allbuttons = [];
+            var guibuttons = [];
+            var buttonsFromPayload = [];
+            
+            node.buttons.forEach(function(rawbutton) {
+                var bt = {
+                    title:prepValue(msg,rawbutton.title, rawbutton["title-type"]),                 
+                    payload:prepValue(msg,rawbutton.payload, rawbutton["payload-type"])
+                };
+                guibuttons.push(bt);
+            });
+
+            if (this.addmode == "no" || this.addmode == "none") {
+            allbuttons = allbuttons.concat(guibuttons);
+            } else {
+                buttonsFromPayload = RED.util.getMessageProperty(msg,"payload.buttons"); 
+            }
+
+            if (this.addmode == "before") { allbuttons = buttonsFromPayload.concat(guibuttons);}
+            if (this.addmode == "after")  { allbuttons = guibuttons.concat(buttonsFromPayload);}  
+
+            //var responses = [{"text":text,"buttons":bttns,"elements":[],"custom":{},"template":null,"image":null,"attachment":null}]     
+
+            // var oldresponses =  RED.util.getMessageProperty(msg,"responses");
+            // var oldresponse = RED.util.getMessageProperty(msg,"responses[0]");
+
+            var pos = Number(node.position);
+            var newtext;
+            if (node.text != "") {
+                newtext = prepValue(msg, node.text,  node.textType); 
+            };
+            
+            padResponses(responses, pos);
+            
+            var oldresponse = responses[pos];
+
+            var oldbuttons =  responses[pos].buttons;
+            var newbuttons = oldbuttons.concat(allbuttons);
         
-        var oldresponse = responses[pos];
+            var updatedresponse = {
+                "text":     (node.text != "") ? newtext: oldresponse.text,
+                "buttons":  newbuttons,
+                "elements": oldresponse.elements,
+                "custom":   oldresponse.custom,
+                "template": oldresponse.template,
+                "image":    oldresponse.image,
+                "attachment":oldresponse.attachment
+            };
 
-        var oldbuttons =  responses[pos].buttons;
-        var newbuttons = oldbuttons.concat(allbuttons);
-    
-        var updatedresponse = {
-            "text":     (node.text != "") ? newtext: oldresponse.text,
-            "buttons":  newbuttons,
-            "elements": oldresponse.elements,
-            "custom":   oldresponse.custom,
-            "template": oldresponse.template,
-            "image":    oldresponse.image,
-            "attachment":oldresponse.attachment
-        };
-
-        responses.splice(pos,1,updatedresponse);
-        msg.responses = responses;
-        node.send(msg);
+            responses.splice(pos,1,updatedresponse);
+            msg.responses = responses;
+            node.send(msg);
+        }
     });
     }
 

@@ -18,28 +18,32 @@ module.exports = function(RED) {
         }
     
         node.on('input', function(msg, send, done) {    
-     
-            var slotsFromPayload = [];
+            if (msg.events == undefined) {
+                node.error("Not properly initialized. Make sure that the flow contains an Init node preceding this node.", msg)
+            } else {
 
-            // just generating events - no checks!
-            node.slots.forEach(function(rawslot) {
-              
-                var slotname = prepValue(msg,rawslot.slotname, rawslot["slotname-type"]);               
-                var slotvalue = prepValue(msg,rawslot.slotvalue, rawslot["slotvalue-type"]);
-                var event = {"event":"slot","timestamp":Date.now(),"name":slotname,"value":slotvalue};
-                msg.events.splice(0,0,event);
-            });
-    
-            if (this.addcheck) {
-                // msg.payload.slots = [{slotname:"location", slotvalue: "Berlin"}];
-                slotsFromPayload = RED.util.getMessageProperty(msg,"payload.slots");
-                slotsFromPayload.forEach(function(rawslot) {
-                    var event = {"event":"slot","timestamp":Date.now(),"name":rawslot.slotname ,"value":rawslot.slotvalue};
+                var slotsFromPayload = [];
+
+                // just generating events - no checks!
+                node.slots.forEach(function(rawslot) {
+                
+                    var slotname = prepValue(msg,rawslot.slotname, rawslot["slotname-type"]);               
+                    var slotvalue = prepValue(msg,rawslot.slotvalue, rawslot["slotvalue-type"]);
+                    var event = {"event":"slot","timestamp":Date.now(),"name":slotname,"value":slotvalue};
                     msg.events.splice(0,0,event);
-                });   
-            } 
-      
-            node.send(msg);
+                });
+        
+                if (this.addcheck) {
+                    // msg.payload.slots = [{slotname:"location", slotvalue: "Berlin"}];
+                    slotsFromPayload = RED.util.getMessageProperty(msg,"payload.slots");
+                    slotsFromPayload.forEach(function(rawslot) {
+                        var event = {"event":"slot","timestamp":Date.now(),"name":rawslot.slotname ,"value":rawslot.slotvalue};
+                        msg.events.splice(0,0,event);
+                    });   
+                } 
+        
+                node.send(msg);
+            }
             });
         }
         RED.nodes.registerType("setslots",SetSlotsNode);
