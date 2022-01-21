@@ -1,0 +1,27 @@
+version: "3.0"
+
+stories:
+
+
+
+- story: interactive_story_1
+  steps:
+  - intent: test_sendtext
+  - action: action_sendtext
+  - intent: test_sendextra
+  - action: action_sendextra
+  - intent: test_sendbuttons
+  - action: action_sendbuttons
+  - intent: test_setslots
+  - action: action_setslots
+
+- story: interactive_story_1
+  steps:
+  - intent: test_sendtext
+  - action: action_sendtext
+  - intent: test_sendextra
+  - action: action_sendextra
+  - intent: test_sendbuttons
+  - action: action_sendbuttons
+  - intent: test_setslots
+  - action: action_setslots
