@@ -14,7 +14,8 @@
                 value: "", 
                 validate: RED.validators.typedInput('textType')
             }, 
-            textType: { value: 'str' }   
+            textType: { value: 'str' },
+            senderr: {value: false}    
         },
         inputs:1,
         outputs:1,
@@ -54,6 +55,10 @@
         <label for="node-input-text"><i class="fa fa-comment-o"></i> text</span></label>
         <input type="text" id="node-input-text" style="width:70%">
         <input type="hidden" id="node-input-textType">
+    <div class="form-row" id="node-once">
+        <label for="node-input-once">send errors to catch node</label>
+        <input type="checkbox" id="node-input-senderr" style="display:inline-block; width:15px; vertical-align:baseline;">
+    </div>
     </div>
 </script>
 
@@ -94,6 +99,9 @@
         <li> specify a fixed text in the config of the node</li>
         <li> specify in the node config how to retrieve the text from <code>msg.payload</code> </li>
     </ul>
+    <p>
+        With Send errors to Catch node unchecked, the flow ignores errors in this node with a warning. For developping and debugging.
+    </p> 
     <h3>References</h3>
     <ul>
         <li><a href="https://rasa.com/docs/action-server/http-api-spec">Rasa Action Server HTTP API</a></li>

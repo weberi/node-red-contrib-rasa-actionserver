@@ -1,0 +1,23 @@
+version: "3.0"
+
+rules:
+
+- rule: sendtext
+  steps:
+  - intent: test_sendtext
+  - action: action_sendtext
+
+- rule: sendextra
+  steps:
+  - intent: test_sendextra
+  - action: action_sendextra
+
+- rule: sendbuttons
+  steps: 
+  - intent: test_sendbuttons
+  - action: action_sendbuttons
+
+- rule: setslots
+  steps:
+  - intent: test_setslots
+  - action: action_setslots

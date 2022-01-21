@@ -9,7 +9,10 @@
         <label for="node-input-once">add from msg</label>
         <input type="checkbox" id="node-input-addcheck" style="display:inline-block; width:15px; vertical-align:baseline;"> 
     </div>
-
+    <div class="form-row" id="node-once">
+        <label for="node-input-once">send errors to catch node</label>
+        <input type="checkbox" id="node-input-senderr" style="display:inline-block; width:15px; vertical-align:baseline;">
+    </div>
     <div class="form-row node-input-slot-container-row">
         <ol id="node-input-slot-container"></ol>
     </div>
@@ -23,7 +26,8 @@
             name:           {value:""},
             text:           {value:""},
             addcheck:        {value:false},
-            slots: {value:[{slotname:"", "slotname-type":null, slotvalue:"", "slotvalue-type":null  }]},        
+            slots: {value:[{slotname:"", "slotname-type":null, slotvalue:"", "slotvalue-type":null  }]},   
+            senderr:        {value:false}
         },
         inputs: 1,
         outputs: 1,
@@ -42,7 +46,7 @@
 
             $("#node-input-slot-container").css('min-height','100px').css('min-width','450px').editableList({
                 addslot: true,
-                header: $("<div>").append($.parseHTML("<div style='width:65%; display: inline-grid'>Slot Name</div><div style='display: inline-grid'>Slot Value</div>")),
+                header: $("<div>").append($.parseHTML("<div style='width:65%; display: inline-grid'>slot name</div><div style='display: inline-grid'>slot value</div>")),
               
                 addItem: function(row, index, data) {
                     var slt = {}  
@@ -123,13 +127,13 @@
         <dt>msg.payload.slots
             <span class="property-type">object</span>
         </dt>
-        <dd> an array of objects <code>[{slotname:slotname, slotvalue:slotvalue}]</code>  </dd>
+        <dd> an array of objects <code>[{slotname:"name1", slotvalue:"value1"}, {slotname:"name2", slotvalue:"value2"} ]</code>, e.g., <code>[{slotname:"likes_music", slotvalue:true},{slotname:"mood", slotvalue: "happy"}]  </dd>
     </dl>
 
 <h3>Outputs</h3>
     <dl class="message-properties">
     <dt>msg.events <span class="property-type">object</span></dt>
-    <dd>an array of objects <code>[{"event":"slot","timestamp":date,"name":slotname ,"value":slotvalue}]</code></dd>
+    <dd>an array of objects <code>[{"event":"slot","timestamp":...,"name":"likes_music","value":true},{"event":"slot","timestamp":...,"name":"mood","value":"happy"}]</code></dd>
 </dl>
 
 
@@ -140,7 +144,7 @@
     <ul>
         <li> specify fixed slot name and value pairs in the config of the node /li>
         <li>  specify in the node config how to retrieve slot name and value pairs from the msg object of the flow</li>
-        <li>  provide an array of <code>{slotname:slotname, slotvalue:slotvalue} </code>objects in the message payload </li>
+        <li>  provide an array of <code>{slotname:"name", slotvalue:"value"} </code>objects in the message payload </li>
     </ul>
     <p>The node adds the events to the events list that was initialized by <code>init</code> node and is 
         carried along  the flow as <code>msg.events</code>. 
@@ -148,6 +152,9 @@
     <p>There are no checks whether the slot names really exist in the Rasa domain or 
         whether there are multiple slot setting events for one slot.</p>
 
+        <p>
+            With Send errors to Catch node unchecked, the flow ignores errors in this node with a warning. For developping and debugging.
+            </p>   
 <h3>References</h3>
     <ul>
         <li><a href="https://rasa.com/docs/action-server/http-api-spec">Rasa Action Server HTTP API</a></li>

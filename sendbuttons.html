@@ -23,7 +23,10 @@
         <button type="button" id="after" class="red-ui-button toggle add-button-group">after</button>
         </span><input type="hidden" id="node-input-addmode">
     </div>
-
+    <div class="form-row" id="node-once">
+        <label for="node-input-once">send errors to catch node</label>
+        <input type="checkbox" id="node-input-senderr" style="display:inline-block; width:15px; vertical-align:baseline;">
+    </div>
     <div class="form-row node-input-button-container-row">
         <ol id="node-input-button-container"></ol>
     </div>
@@ -62,6 +65,7 @@
             }, 
             textType: { value: 'str' },
             addmode: { value: "no" },
+            senderr:        {value:false},
             buttons: { value: [{ title: "", "title-type": null, payload: "", "payload-type": null }] },
         },
         inputs: 1,
@@ -108,7 +112,7 @@
 
             $("#node-input-button-container").css('min-height', '100px').css('min-width', '450px').editableList({
                 addButton: true,
-                header: $("<div>").append($.parseHTML("<div style='width:65%; display: inline-grid'>Titel</div><div style='display: inline-grid'>Payload</div>")),
+                header: $("<div>").append($.parseHTML("<div style='width:65%; display: inline-grid'>title</div><div style='display: inline-grid'>payload</div>")),
 
                 addItem: function (row, index, data) {
                     var btn = {}
@@ -221,7 +225,7 @@
     <ul>
         <li> specify fixed button title and payload pairs in the node config</li>
         <li> use the node config for specifying how to retrieve button title and payload pairs from the msg object of the flow</li>
-        <li>provide an array of <code>{title:title, payload:payload}</code> objects in the message payload </li>
+        <li>provide a property <code>buttons</code>  with an  array like   <code>buttons:[{title:title1, payload:payload1},{title:title2, payload:payload2} ]</code> objects in the message payload </li>
     </ul>
 
 <p>Oftentimes, the chatbot will want to utter a text message introducing and 
@@ -237,7 +241,9 @@ If the <code>msg.responses</code> array already contains a response at the indic
 its text will be overwritten if the  node specifies a new text.  
  Buttons that the node declares  will be added to  buttons that
 are already present in the response object at the given position. </p> 
-
+<p>
+    With Send errors to Catch node unchecked, the flow ignores errors in this node with a warning. For developping and debugging.
+    </p> 
 <h3>References</h3>
     <ul>
         <li><a href="https://rasa.com/docs/action-server/http-api-spec">Rasa Action Server HTTP API</a></li>

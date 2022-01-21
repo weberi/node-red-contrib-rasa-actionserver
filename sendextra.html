@@ -24,7 +24,8 @@
                 value: "", 
                 validate: RED.validators.typedInput('attachmentType')
             }, 
-            attachmentType: { value: 'str' }    
+            attachmentType: { value: 'str' },
+            senderr: {value: false}    
         },
         inputs:1,
         outputs:1,
@@ -56,6 +57,7 @@
             typeField: $("#node-input-attachmentType"),
             types: ['str','msg']
             });
+
         }
     });
 </script>
@@ -66,25 +68,29 @@
         <input type="text" id="node-input-name" placeholder="name">
     </div>
     <div class="form-row">
-        <label for="node-input-position"><i class="fa fa-list-ol"></i> position</span></label>
+        <label for="node-input-position"><i class="fa fa-list-ol"></i> position</label>
         <input type="text" id="node-input-position" style="width:70%">
         <input type="hidden" id="node-input-positionType">
-      </div>
-      <div class="form-row">
-        <label for="node-input-text"><i class="fa fa-comment-o"></i> text</span></label>
+    </div>
+    <div class="form-row">
+        <label for="node-input-text"><i class="fa fa-comment-o"></i> text</label>
         <input type="text" id="node-input-text" style="width:70%">
         <input type="hidden" id="node-input-textType">
-      </div>
-      <div class="form-row">
-        <label for="node-input-image"><i class="fa fa-picture-o"></i> image</span></label>
+    </div>
+    <div class="form-row">
+        <label for="node-input-image"><i class="fa fa-picture-o"></i> image</label>
         <input type="text" id="node-input-image" style="width:70%">
         <input type="hidden" id="node-input-imageType">
-      </div>
-      <div class="form-row">
-        <label for="node-input-attachment"><i class="fa fa-file-o"></i> attachment</span></label>
+    </div>
+    <div class="form-row">
+        <label for="node-input-attachment"><i class="fa fa-file-o"></i> attachment</label>
         <input type="text" id="node-input-attachment" style="width:70%">
         <input type="hidden" id="node-input-attachmentType">
-      </div>
+    </div>
+    <div class="form-row" id="node-once">
+        <label for="node-input-once">send errors to catch node</label>
+        <input type="checkbox" id="node-input-senderr" style="display:inline-block; width:15px; vertical-align:baseline;">
+    </div>
 </script>
 
 
@@ -126,6 +132,9 @@
         <li> specify in the node config how to retrieve the text, image url, or attachment url  from <code>msg.payload</code> </li>
     </ul>
 
+<p>
+With Send errors to Catch node unchecked, the flow ignores errors in this node with a warning. For developping and debugging.
+</p>    
 <h3>References</h3>
     <ul>
         <li><a href="https://rasa.com/docs/action-server/http-api-spec">Rasa Action Server HTTP API</a></li>

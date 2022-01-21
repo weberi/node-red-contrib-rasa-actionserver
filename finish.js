@@ -23,3 +23,5 @@ module.exports = function(RED) {
     }
     RED.nodes.registerType("finish",FinishNode);
 }
+
+// no need cleaning up the msg object since the htt response only sends the payload

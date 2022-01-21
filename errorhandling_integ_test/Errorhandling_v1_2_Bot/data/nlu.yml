@@ -1,0 +1,14 @@
+version: "3.0"
+nlu:
+- intent: test_sendtext
+  examples: |
+    - teste text
+- intent: test_sendextra
+  examples: |
+    - teste extra
+- intent: test_sendbuttons
+  examples: |
+    - teste buttons
+- intent: test_setslots
+  examples: |
+    - teste slots

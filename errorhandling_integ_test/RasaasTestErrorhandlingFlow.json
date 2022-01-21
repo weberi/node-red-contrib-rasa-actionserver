@@ -1,0 +1,308 @@
+[
+    {
+        "id": "40f70f52d48a334f",
+        "type": "tab",
+        "label": "RasaasTestErrorhandling",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "0e5a3c4dfdb486bc",
+        "type": "comment",
+        "z": "40f70f52d48a334f",
+        "name": "Rasaas Errorhandling Test",
+        "info": "",
+        "x": 170,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "d058b06e9d84a523",
+        "type": "init",
+        "z": "40f70f52d48a334f",
+        "name": "",
+        "x": 310,
+        "y": 137.5,
+        "wires": [
+            [
+                "322e5eea2bb1462f"
+            ]
+        ]
+    },
+    {
+        "id": "5aa22523eff25d5a",
+        "type": "http in",
+        "z": "40f70f52d48a334f",
+        "name": "",
+        "url": "/testhook",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 140,
+        "y": 137.5,
+        "wires": [
+            [
+                "d058b06e9d84a523"
+            ]
+        ]
+    },
+    {
+        "id": "322e5eea2bb1462f",
+        "type": "switch",
+        "z": "40f70f52d48a334f",
+        "name": "",
+        "property": "action",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "action_sendtext",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "action_sendextra",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "action_sendbuttons",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "action_setslots",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 4,
+        "x": 450,
+        "y": 137.5,
+        "wires": [
+            [
+                "8a9a473421da212b"
+            ],
+            [
+                "bba9d2016925f9c4"
+            ],
+            [
+                "b15d253f40b935cc"
+            ],
+            [
+                "5e779cb5c4cf85aa"
+            ]
+        ]
+    },
+    {
+        "id": "5e779cb5c4cf85aa",
+        "type": "setslots",
+        "z": "40f70f52d48a334f",
+        "name": "",
+        "text": "",
+        "addcheck": false,
+        "slots": [
+            {
+                "slotname": "test_slot",
+                "slotname-type": "str",
+                "slotvalue": "ok",
+                "slotvalue-type": "str"
+            },
+            {
+                "slotname": "payload.undef[5]",
+                "slotname-type": "str",
+                "slotvalue": "error",
+                "slotvalue-type": "str"
+            }
+        ],
+        "senderr": true,
+        "x": 660,
+        "y": 200,
+        "wires": [
+            [
+                "184c08d7232fdfc9"
+            ]
+        ]
+    },
+    {
+        "id": "bba9d2016925f9c4",
+        "type": "sendextra",
+        "z": "40f70f52d48a334f",
+        "name": "",
+        "position": "0",
+        "positionType": "num",
+        "text": "no error",
+        "textType": "str",
+        "image": "payload.errors",
+        "imageType": "msg",
+        "attachment": "payload.errors[6]",
+        "attachmentType": "msg",
+        "senderr": true,
+        "x": 660,
+        "y": 120,
+        "wires": [
+            [
+                "184c08d7232fdfc9"
+            ]
+        ]
+    },
+    {
+        "id": "8a9a473421da212b",
+        "type": "sendtext",
+        "z": "40f70f52d48a334f",
+        "name": "",
+        "position": "0",
+        "positionType": "num",
+        "text": "payload.errors",
+        "textType": "msg",
+        "senderr": true,
+        "x": 660,
+        "y": 80,
+        "wires": [
+            [
+                "184c08d7232fdfc9"
+            ]
+        ]
+    },
+    {
+        "id": "b15d253f40b935cc",
+        "type": "sendbuttons",
+        "z": "40f70f52d48a334f",
+        "name": "",
+        "position": "0",
+        "positionType": "num",
+        "text": "Kein fehler",
+        "textType": "str",
+        "addmode": "no",
+        "senderr": true,
+        "buttons": [
+            {
+                "title": "no error",
+                "title-type": "str",
+                "payload": "/intent_ok",
+                "payload-type": "str"
+            },
+            {
+                "title": "payload.error",
+                "title-type": "msg",
+                "payload": "/intent_ok",
+                "payload-type": "str"
+            },
+            {
+                "title": "payload.error[3]",
+                "title-type": "msg",
+                "payload": "",
+                "payload-type": "str"
+            }
+        ],
+        "x": 670,
+        "y": 160,
+        "wires": [
+            [
+                "184c08d7232fdfc9"
+            ]
+        ]
+    },
+    {
+        "id": "184c08d7232fdfc9",
+        "type": "finish",
+        "z": "40f70f52d48a334f",
+        "name": "",
+        "x": 880,
+        "y": 137.5,
+        "wires": [
+            [
+                "891f96642f74ed8c"
+            ]
+        ]
+    },
+    {
+        "id": "891f96642f74ed8c",
+        "type": "http response",
+        "z": "40f70f52d48a334f",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1030,
+        "y": 137.5,
+        "wires": []
+    },
+    {
+        "id": "71d979502a0cb3f8",
+        "type": "catch",
+        "z": "40f70f52d48a334f",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 120,
+        "y": 260,
+        "wires": [
+            [
+                "7c91d56438a4bfa7"
+            ]
+        ]
+    },
+    {
+        "id": "45022ffcd4a17ac4",
+        "type": "sendtext",
+        "z": "40f70f52d48a334f",
+        "name": "",
+        "position": "0",
+        "positionType": "num",
+        "text": "payload.reply",
+        "textType": "msg",
+        "senderr": false,
+        "x": 660,
+        "y": 260,
+        "wires": [
+            [
+                "66ec09392509442a"
+            ]
+        ]
+    },
+    {
+        "id": "66ec09392509442a",
+        "type": "finish",
+        "z": "40f70f52d48a334f",
+        "name": "",
+        "x": 890,
+        "y": 260,
+        "wires": [
+            [
+                "d8bb55f3c05eb1fb"
+            ]
+        ]
+    },
+    {
+        "id": "d8bb55f3c05eb1fb",
+        "type": "http response",
+        "z": "40f70f52d48a334f",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1030,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "7c91d56438a4bfa7",
+        "type": "template",
+        "z": "40f70f52d48a334f",
+        "name": "",
+        "field": "payload.reply",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "Catch node caught error from  {{error.source.name}}, a {{error.source.type}} type node. !",
+        "output": "str",
+        "x": 320,
+        "y": 260,
+        "wires": [
+            [
+                "45022ffcd4a17ac4"
+            ]
+        ]
+    }
+]

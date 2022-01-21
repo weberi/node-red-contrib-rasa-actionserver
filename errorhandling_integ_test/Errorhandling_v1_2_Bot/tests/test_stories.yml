@@ -1,0 +1,25 @@
+#### This file contains tests to evaluate that your bot behaves as expected.
+#### If you want to learn more, please see the docs: https://rasa.com/docs/rasa/testing-your-assistant
+
+stories:
+
+- story: interactive_story_1
+  steps:
+  - user: |
+      teste text
+    intent: test_sendtext
+  - action: action_sendtext
+  - user: |
+      teste extra 
+    intent: test_sendextra
+  - action: action_sendextra
+  - user: |
+      teste buttons
+    intent: test_sendbuttons
+  - action: action_sendbuttons
+  - user: |
+      teste slots
+    intent: test_setslots
+  - action: action_setslots
+
+
