@@ -1,3 +1,15 @@
+/* 
+node-red-contrib-rasa-actionserver v1.3.0
+Copyright (c) 2023 Irene Weber
+
+MIT License (http://www.opensource.org/licenses/mit-license.php)
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+
 module.exports = function (RED) {
 
     function SendButtonsNode(config) {
@@ -13,7 +25,7 @@ module.exports = function (RED) {
 
         var sendErrorsToCatch = config.senderr;  // if set, node sends error to catch and stops 
         // if not set, node issues warnings and continues     
-        var errs = 0;
+        var errors = [];
 
         function prepValue(msg, instr, type) {
             // Extract the required value from msg
@@ -26,7 +38,7 @@ module.exports = function (RED) {
                 };
             } catch (error) {
                 node.warn("ActionServer: " + node.name + ": " + instr + " not found in msg.");
-                errs = errs + 1;
+                errors.push(error.toString());
             }
             return outstr;
         }
@@ -78,7 +90,7 @@ module.exports = function (RED) {
                     } catch (error) {
                         node.warn("ActionServer: " + node.name + ": payload.buttons faulty or not found in msg.");
 
-                        errs = errs + 1;
+                        errors.push(error.toString()); 
                     }
                 }
 
@@ -93,10 +105,10 @@ module.exports = function (RED) {
                     });
                 } catch (error) {
                     node.warn("ActionServer: " + node.name + "buttons in node config faulty or not found in msg .");
-                    errs = errs + 1;
+                    errors.push(error.toString());  ;
                 }
 
-                if (errs == 0) {
+                if (errors.length == 0) {
                     if (this.addmode == "before") {
                         allbuttons = buttonsFromPayload_checked.concat(guibuttons);
                     } else {
@@ -123,8 +135,8 @@ module.exports = function (RED) {
                     msg.responses = responses;
                     send(msg);
                 } else {
-                    if (sendErrorsToCatch) {
-                        node.error("ActionServer: " + node.name + ": Something went wrong (" + errs + ")", msg);
+                    if (sendErrorsToCatch && errors.length > 0) {
+                        node.error("ActionServer: " + node.name + ": Something went wrong (" +  errors.join('; ') + ")", msg);
                     } else {
                         send(msg);
                     }

@@ -1,0 +1,18 @@
+<head>
+  <link rel="stylesheet" href="https://cdn.statically.io/gh/weberi/chatroom/master/dist/Chatroom.css"/>
+
+  </head>
+  <body>
+    <div class="chat-container"></div>
+    <script src="https://cdn.statically.io/gh/weberi/chatroom/master/dist/Chatroom.js"></script>
+    <script type="text/javascript">
+      var chatroom = new window.Chatroom({
+        // host: "http://193.174.193.158:5005",
+        host: "http://127.0.0.1:5005",
+        title: "Simrasa Test Bot",
+        container: document.querySelector(".chat-container"),
+        welcomeMessage: "Hello, lets's test the flow! Sorry, I have difficulties recognzing the test_set_moodslot intent. Please enter '/test_set_moodslot' to trigger the slot setting action."
+      });
+      chatroom.openChat();
+    </script>
+  </body>

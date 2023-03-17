@@ -1,0 +1,261 @@
+<!-- node-red-contrib-rasa-actionserver v1.3.0
+Copyright (c) 2023 Irene Weber
+
+MIT License (http://www.opensource.org/licenses/mit-license.php)
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. -->
+
+<script type="text/html" data-template-name="simrasa">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> name</label>
+        <input type="text" id="node-input-name">
+    </div>
+    <div class="form-row" id="node-once">
+        <label for="node-input-once">send errors to catch node</label>
+        <input type="checkbox" id="node-input-errtocatch" style="display:inline-block; width:15px; vertical-align:baseline;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-action"><i class="fa fa-cog"></i> action</label>
+        <input type="text" id="node-input-action">
+    </div>
+    <div class="form-row node-input-slot-container-row">
+        <ol id="node-input-slot-container"></ol>
+    </div>     
+</script>
+</script>
+
+<script type="text/javascript">
+    (function () {
+
+        function prepareProps(actn, slts) {
+            var theprops = {};
+            var theslots = [];
+            slts.each(function (i) {
+                var slot = $(this);
+                var slt_name_v = slot.find(".node-input-slot-slotname").typedInput('value');
+                var slt_name_t = slot.find(".node-input-slot-slotname").typedInput('type');
+                var slt_value_v = slot.find(".node-input-slot-slotvalue").typedInput('value');
+                var slt_value_t = slot.find(".node-input-slot-slotvalue").typedInput('type');
+                theslots.push({ "slotname": slt_name_v, "slotname-type": slt_name_t, "slotvalue": slt_value_v, "slotvalue-type": slt_value_t });
+            });
+            theprops["next_action"] = actn.typedInput('value');
+            theprops["slots"] = theslots;
+            return theprops;
+        }
+
+        /** Perform inject */
+        function doInject(node, customMsg) {
+            var label = node._def.label.call(node, customMsg ? customMsg.__user_inject_props__ : undefined);
+            if (label.length > 30) {
+                label = label.substring(0, 50) + "...";
+            }
+            label = label.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            $.ajax({
+                url: "inject/" + node.id,
+                type: "POST",
+                data: JSON.stringify(customMsg || {}),
+                contentType: "application/json; charset=utf-8",
+                success: function (resp) {
+                    RED.notify(node._("inject.success", { label: label }), { type: "success", id: "inject", timeout: 2000 });
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    if (jqXHR.status == 404) {
+                        RED.notify(node._("common.notification.error", { message: node._("common.notification.errors.not-deployed") }), "error");
+                    } else if (jqXHR.status == 500) {
+                        RED.notify(node._("common.notification.error", { message: node._("inject.errors.failed") }), "error");
+                    } else if (jqXHR.status == 0) {
+                        RED.notify(node._("common.notification.error", { message: node._("common.notification.errors.no-response") }), "error");
+                    } else {
+                        RED.notify(node._("common.notification.error", { message: node._("common.notification.errors.unexpected", { status: jqXHR.status, message: textStatus }) }), "error");
+                    }
+                }
+            });
+        }
+
+
+        RED.nodes.registerType('simrasa', {
+            category: 'rasaas',
+            color: "#baaff9",
+            defaults: {
+                name: { value: "" },
+                action: {
+                    value: "",
+                    required: true
+                },
+                errtocatch: { value: false },
+                slots: {
+                    value: [{ slotname: "", "slotname-type": "str", slotvalue: "", "slotvalue-type": "str" }], validate: function (ss) {
+                        if (!ss || ss.length === 0) { return true }
+                        for (var i = 0; i < ss.length; i++) {
+                            if (!ss[i].slotname || ss[i].slotname.length === 0) { return RED._("node-red:inject.errors.invalid-prop", { prop: 'msg.' + ss[i], error: "Slot " + i }) }
+                            else if (ss[i]["slotvalue-type"] === "num") {
+                                if (!/^[+-]?[0-9]*\.?[0-9]*([eE][-+]?[0-9]+)?$/.test(ss[i].slotvalue)) {
+                                    return RED._("node-red:inject.errors.invalid-prop", { prop: 'msg.' + ss[i], error: "Slot " + i });
+                                }
+                            }
+                        }
+                        return true;
+                    }
+                },
+
+            },
+
+            inputs: 0,
+            outputs: 1,
+
+            icon: "font-awesome/fa-quote-right",
+            label: function () {
+                return this.name || "simrasa";
+            },
+            labelStyle: function () {
+                return this.name ? "node_label_italic" : "";
+            },
+
+            oneditprepare: function () {
+                var node = this;
+                var slots = node.slots;
+
+                $('#node-input-action').typedInput({
+                    default: '',
+                    typeField: $("#node-input-actionType"),
+                    types: ['str']
+                });
+
+                $("#node-input-slot-container").css('min-height', '100px').css('min-width', '450px').editableList({
+                    buttons: [
+                        {
+                            id: "node-simrasa-test-inject-button",
+                            icon: "fa fa-quote-right",
+                            label: "Send now (never to catch node!)",
+                            click: function (e) {
+                                let actn = $('#node-input-action');
+                                let items = $("#node-input-slot-container").editableList('items');
+                                let props = prepareProps(actn, items);
+                                let m = { __user_inject_props__: props };
+                                doInject(node, m);
+                            }
+                        }
+                    ],
+                    addButton: "add slot",
+                    header: $("<div>").append($.parseHTML("<div style='width:65%; display: inline-grid'>&nbsp;&nbsp;slot name</div><div style='display: inline-grid'>slot value</div>")),
+
+                    addItem: function (row, index, data) {
+                        var slt = {}
+                        if (data.hasOwnProperty("slot")) {
+                            slt.slotname = data.slot.slotname;
+                            slt["slotname-type"] = data.slot["slotname-type"];
+                            slt.slotvalue = data.slot.slotvalue;
+                            slt["slotvalue-type"] = data.slot["slotvalue-type"];
+                        } else {
+                            slt.slotname = null;
+                            slt["slotname-type"] = "str";
+                            slt.slotvalue = null;
+                            slt["slotvalue-type"] = "str";
+                        }
+
+                        row.css({
+                            overflow: 'hidden',
+                            whiteSpace: 'nowrap'
+                        });
+
+                        var slotnameField = $('<slotname/>', { class: "node-input-slot-slotname", type: "text", style: "margin-left: 5px; width:200px;" }).appendTo(row).typedInput({ default: 'str', types: ['str'], required: true });
+                        slotnameField.typedInput('value', slt.slotname);
+                        slotnameField.typedInput('type', slt["slotname-type"]);
+
+                        $('<div/>', { style: 'display:inline-block; padding:0px 6px;' }).text('=').appendTo(row)
+                        var slotvalueField = $('<slotvalue/>', { class: "node-input-slot-slotvalue", type: "text", style: "width:200px; padding-right:8px; box-sizing:border-box;" }).appendTo(row).typedInput({ default: 'str', types: ['str', 'num', 'bool'], required: true });
+                        slotvalueField.typedInput('value', slt.slotvalue);
+                        slotvalueField.typedInput('type', slt["slotvalue-type"]);
+
+                        var finalspan = $('<span/>', { style: "float: right;margin-top: 6px;" }).appendTo(row);
+                    },
+
+                    sortable: true,
+                    removable: true
+                });
+
+                for (var i = 0; i < node.slots.length; i++) {
+                    var slot = node.slots[i];
+                    $("#node-input-slot-container").editableList('addItem', { slot: slot, i: i });
+                };
+            },
+
+            oneditsave: function () {
+                var node = this;
+
+                $("ol.node-input-slot-container").editableList('height', '200px');
+                var slts = $("#node-input-slot-container").editableList('items');
+                node.slots = [];
+                slts.each(function (i) {
+                    let slt = $(this);
+                    let s = {};
+
+                    s.slotname = slt.find(".node-input-slot-slotname").typedInput('value');
+                    let slotnametype = slt.find(".node-input-slot-slotname").typedInput('type');
+                    s["slotname-type"] = slotnametype;
+
+                    s.slotvalue = slt.find(".node-input-slot-slotvalue").typedInput('value');
+                    let slotvaluetype = slt.find(".node-input-slot-slotvalue").typedInput('type');
+                    s["slotvalue-type"] = slotvaluetype;
+
+                    node.slots.push(s);
+                });
+
+            },
+
+            oneditresize: function (size) {
+                var rows = $("#dialog-form>div:not(.node-input-slot-container-row)");
+                var height = size.height;
+                for (var i = 0; i < rows.length; i++) {
+                    height -= $(rows[i]).outerHeight(true);
+                }
+                var editorRow = $("#dialog-form>div.node-input-slot-container-row");
+                height -= (parseInt(editorRow.css("marginTop")) + parseInt(editorRow.css("marginBottom")));
+                height += 16;
+                $("#node-input-slot-container").editableList('height', height);
+            },
+
+            button: {
+                enabled: function () {
+                    return !this.changed
+                },
+                onclick: function () {
+                    if (this.changed) {
+                        return RED.notify(RED._("notification.warning", { message: RED._("notification.warnings.undeployedChanges") }), "warning");
+                    }
+                    doInject(this);
+                }
+            },
+
+        });
+    })();
+</script>
+
+<script type="text/html" data-help-name="simrasa">
+    <p>sends a rasa-like message to the action server so that the actions can be tested without actually running rasa</p>
+    <h3>Inputs</h3>
+    works like an <code>inject</code> node
+    <ul>
+        <li>an action is mandatory in the configuration</li>
+        <li>an arbitrary number of slots can be configured as well </li>
+    </ul>
+    
+    
+    <h3>Outputs</h3>
+   a <code>msg</code> object that can be propagated from an <code>init</code> through other <code>rasaas</code> nodes
+        to a <code>finish</code> node
+    
+    <h3>Details</h3>
+    <p><code>simrasa</code> is short for "Simulate rasa".The node emits a <code>msg</code> object containing all elements of a rasa action request that are needed for testing an action. In order to test an action, the <code>http in </code> node of an action server flow is substituted by an <code>simrasa</code> node. The action can be configured in the <code>simrasa</code> node.
+    
+    
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://rasa.com/docs/action-server/http-api-spec">Rasa Action Server HTTP API</a></li>
+        <li><a href="https://github.com/weberi/node-red-contrib-rasa-actionserver.git">GitHub</a> - the nodes github
+            repository</li>
+    </ul>
+    </script>

@@ -1,10 +1,12 @@
 work/
-errorhandling_integ_test/Errorhandling_v1_2_Bot/.rasa
-errorhandling_integ_test/Errorhandling_v1_2_Bot/models/
-errorhandling_integ_test/Errorhandling_v1_2_Bot/actions/
+work_2023/
+errorhandling_integ_test/
 Flows*/
 node_modules/
-work/
-Node-REDCodingNotes.txt
+Mirror2Github.png
+Node-REDCodingNotes.md
 node-red-contrib-rasa-actionserver-*.tgz
+.gitignore
+.npmignore
+
 

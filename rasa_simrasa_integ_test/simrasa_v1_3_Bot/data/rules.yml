@@ -1,0 +1,24 @@
+version: "3.0"
+
+rules:
+
+- rule: action_weather
+  steps:
+  - intent: test_action_weather
+  - action: action_weather
+
+- rule: action_generalinfo
+  steps:
+  - intent: test_action_generalinfo
+  - action: action_generalinfo
+
+- rule: set_moodslot
+  steps: 
+  - intent: test_set_moodslot
+  - action: set_moodslot
+  - action: utter_mood_slots
+
+- rule: ask_mood
+  steps:
+  - intent: test_ask_mood
+  - action: ask_mood

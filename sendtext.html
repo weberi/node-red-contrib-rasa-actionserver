@@ -1,3 +1,13 @@
+<!-- node-red-contrib-rasa-actionserver v1.3.0
+Copyright (c) 2023 Irene Weber
+
+MIT License (http://www.opensource.org/licenses/mit-license.php)
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. -->
+
 <script type="text/javascript">
     RED.nodes.registerType('sendtext',{
         category: 'rasaas',
@@ -82,8 +92,8 @@
 <h3>Outputs</h3>
     <dl class="message-properties">
         <dt>msg.response <span class="property-type">object</span></dt>
-        <dd>the new text response is s inserted 
-            into the response indicated by <code> position </code> in <code>msg.responses</code></dd>
+        <dd>the new text response is inserted 
+            into the response indicated by <code>position</code> in <code>msg.responses</code></dd>
          </dl>
 
 <h3>Details</h3>
@@ -91,7 +101,7 @@
     It expects an array of response objects <code>msg.responses</code>  
     initialized by an <code>init</code> node which the action server will eventually return to Rasa.</p>
     The node will insert as many responses into the array as is necessary to meet the specified position. 
-    If the responses array already contains a response at the indicated position, the node replaces its text response with 
+    If the responses array already contains a response at the indicated  position, the node replaces its text response with 
     the new text response. </p> 
     
     There are two options to provide a text response:
@@ -100,7 +110,7 @@
         <li> specify in the node config how to retrieve the text from <code>msg.payload</code> </li>
     </ul>
     <p>
-        With Send errors to Catch node unchecked, the flow ignores errors in this node with a warning. For developping and debugging.
+        With <code>Send errors to Catch node</code> unchecked, the flow ignores errors in this node with a warning. For developping and debugging.
     </p> 
     <h3>References</h3>
     <ul>

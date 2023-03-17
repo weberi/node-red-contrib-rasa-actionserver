@@ -1,0 +1,14 @@
+version: "3.0"
+nlu:
+- intent: test_action_weather
+  examples: |
+    - test weather action
+- intent: test_action_generalinfo
+  examples: |
+    - test info action
+- intent: test_set_moodslot
+  examples: |
+    - test slot action
+- intent: test_ask_mood
+  examples: |
+    - test button action

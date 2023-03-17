@@ -1,0 +1,492 @@
+[
+    {
+        "id": "7a2a6eb5067de0a9",
+        "type": "tab",
+        "label": "simrasa example",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "e18e17ed9503e564",
+        "type": "http response",
+        "z": "7a2a6eb5067de0a9",
+        "d": true,
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 970,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "be97b0943dd4436c",
+        "type": "init",
+        "z": "7a2a6eb5067de0a9",
+        "name": "",
+        "x": 390,
+        "y": 140,
+        "wires": [
+            [
+                "a4eddec06ce61b3d"
+            ]
+        ]
+    },
+    {
+        "id": "a4eddec06ce61b3d",
+        "type": "switch",
+        "z": "7a2a6eb5067de0a9",
+        "name": "",
+        "property": "action",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "action_weather",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "action_generalinfo",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "set_moodslot",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "ask_mood",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 4,
+        "x": 210,
+        "y": 320,
+        "wires": [
+            [
+                "b80fddc13d8c2c10"
+            ],
+            [
+                "cf296de9516fe0c3"
+            ],
+            [
+                "c50cb9c7ce0c75d5"
+            ],
+            [
+                "69ed2eba156ac677"
+            ]
+        ]
+    },
+    {
+        "id": "b80fddc13d8c2c10",
+        "type": "template",
+        "z": "7a2a6eb5067de0a9",
+        "name": "weatherstack (needs API Key)",
+        "field": "url",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "http://api.weatherstack.com/current?access_key=???&query={{slots.location}}",
+        "output": "str",
+        "x": 450,
+        "y": 260,
+        "wires": [
+            [
+                "fd14d4788a8fec04"
+            ]
+        ]
+    },
+    {
+        "id": "fd14d4788a8fec04",
+        "type": "http request",
+        "z": "7a2a6eb5067de0a9",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 670,
+        "y": 260,
+        "wires": [
+            [
+                "901783db6cd85c0e"
+            ]
+        ]
+    },
+    {
+        "id": "901783db6cd85c0e",
+        "type": "template",
+        "z": "7a2a6eb5067de0a9",
+        "name": "",
+        "field": "payload.text",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "It is {{payload.current.weather_descriptions.0}} in {{payload.location.name}}, {{payload.location.country}} at the moment. The temperature is {{payload.current.temperature}} degrees, the humidity is {{payload.current.humidity}}% and the wind speed is {{payload.current.wind_speed}} mph.",
+        "output": "str",
+        "x": 820,
+        "y": 260,
+        "wires": [
+            [
+                "d2bbc8f86619c7ee"
+            ]
+        ]
+    },
+    {
+        "id": "d2bbc8f86619c7ee",
+        "type": "sendextra",
+        "z": "7a2a6eb5067de0a9",
+        "name": "",
+        "position": "0",
+        "positionType": "num",
+        "text": "payload.text",
+        "textType": "msg",
+        "image": "payload.current.weather_icons.0",
+        "imageType": "msg",
+        "attachment": "",
+        "attachmentType": "str",
+        "senderr": true,
+        "x": 960,
+        "y": 260,
+        "wires": [
+            [
+                "4cb0e64fc25d4e1a"
+            ]
+        ]
+    },
+    {
+        "id": "cf296de9516fe0c3",
+        "type": "template",
+        "z": "7a2a6eb5067de0a9",
+        "name": "",
+        "field": "url",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "https://en.wikipedia.org/w/api.php?action=opensearch&limit=1&namespace=0&format=json&search={{slots.location}}",
+        "output": "str",
+        "x": 380,
+        "y": 300,
+        "wires": [
+            [
+                "a4f14f0758ba9802"
+            ]
+        ]
+    },
+    {
+        "id": "a4f14f0758ba9802",
+        "type": "http request",
+        "z": "7a2a6eb5067de0a9",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 530,
+        "y": 300,
+        "wires": [
+            [
+                "f3973229437b9f81"
+            ]
+        ]
+    },
+    {
+        "id": "f3973229437b9f81",
+        "type": "sendextra",
+        "z": "7a2a6eb5067de0a9",
+        "name": "",
+        "position": "0",
+        "positionType": "num",
+        "text": "You can find info here!",
+        "textType": "str",
+        "image": "",
+        "imageType": "str",
+        "attachment": "payload[3][0]",
+        "attachmentType": "msg",
+        "senderr": false,
+        "x": 680,
+        "y": 300,
+        "wires": [
+            [
+                "4cb0e64fc25d4e1a"
+            ]
+        ]
+    },
+    {
+        "id": "29de67584d532f2c",
+        "type": "debug",
+        "z": "7a2a6eb5067de0a9",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 970,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "7b94bc3f0f685a04",
+        "type": "simrasa",
+        "z": "7a2a6eb5067de0a9",
+        "name": "action_generalinfo",
+        "action": "action_generalinfo",
+        "errtocatch": false,
+        "slots": [
+            {
+                "slotname": "location",
+                "slotname-type": "str",
+                "slotvalue": "Dubai",
+                "slotvalue-type": "str"
+            }
+        ],
+        "x": 150,
+        "y": 140,
+        "wires": [
+            [
+                "be97b0943dd4436c"
+            ]
+        ]
+    },
+    {
+        "id": "97853a6a957a0452",
+        "type": "http in",
+        "z": "7a2a6eb5067de0a9",
+        "d": true,
+        "name": "",
+        "url": "/simrasatesthook",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 120,
+        "y": 40,
+        "wires": [
+            [
+                "be97b0943dd4436c"
+            ]
+        ]
+    },
+    {
+        "id": "2eee70ebeeee7921",
+        "type": "catch",
+        "z": "7a2a6eb5067de0a9",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 820,
+        "y": 440,
+        "wires": [
+            [
+                "92ce37488a61279f"
+            ]
+        ]
+    },
+    {
+        "id": "92ce37488a61279f",
+        "type": "debug",
+        "z": "7a2a6eb5067de0a9",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 970,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "c50cb9c7ce0c75d5",
+        "type": "setslots",
+        "z": "7a2a6eb5067de0a9",
+        "name": "",
+        "text": "",
+        "addcheck": false,
+        "slots": [
+            {
+                "slotname": "mood",
+                "slotname-type": "str",
+                "slotvalue": "splendid",
+                "slotvalue-type": "str"
+            },
+            {
+                "slotname": "moodscale",
+                "slotname-type": "str",
+                "slotvalue": "12.5",
+                "slotvalue-type": "str"
+            }
+        ],
+        "senderr": false,
+        "x": 380,
+        "y": 340,
+        "wires": [
+            [
+                "f60814674b1af395"
+            ]
+        ]
+    },
+    {
+        "id": "4cb0e64fc25d4e1a",
+        "type": "finish",
+        "z": "7a2a6eb5067de0a9",
+        "name": "",
+        "x": 850,
+        "y": 380,
+        "wires": [
+            [
+                "29de67584d532f2c",
+                "e18e17ed9503e564"
+            ]
+        ]
+    },
+    {
+        "id": "f60814674b1af395",
+        "type": "sendtext",
+        "z": "7a2a6eb5067de0a9",
+        "name": "",
+        "position": "0",
+        "positionType": "num",
+        "text": "I feel happy!",
+        "textType": "str",
+        "senderr": false,
+        "x": 520,
+        "y": 340,
+        "wires": [
+            [
+                "4cb0e64fc25d4e1a"
+            ]
+        ]
+    },
+    {
+        "id": "69ed2eba156ac677",
+        "type": "sendbuttons",
+        "z": "7a2a6eb5067de0a9",
+        "name": "",
+        "position": "0",
+        "positionType": "num",
+        "text": "How do you feel today?",
+        "textType": "str",
+        "addmode": "no",
+        "senderr": false,
+        "buttons": [
+            {
+                "title": "happy",
+                "title-type": "str",
+                "payload": "/tell_happy",
+                "payload-type": "str"
+            },
+            {
+                "title": "good",
+                "title-type": "str",
+                "payload": "/tell_good",
+                "payload-type": "str"
+            },
+            {
+                "title": "depressed",
+                "title-type": "str",
+                "payload": "/tell_depressed",
+                "payload-type": "str"
+            }
+        ],
+        "x": 390,
+        "y": 380,
+        "wires": [
+            [
+                "4cb0e64fc25d4e1a"
+            ]
+        ]
+    },
+    {
+        "id": "b27bc4c62c990dce",
+        "type": "simrasa",
+        "z": "7a2a6eb5067de0a9",
+        "name": "set_moodslot",
+        "action": "set_moodslot",
+        "errtocatch": false,
+        "slots": [],
+        "x": 130,
+        "y": 180,
+        "wires": [
+            [
+                "be97b0943dd4436c"
+            ]
+        ]
+    },
+    {
+        "id": "4fb5c40c19217acc",
+        "type": "simrasa",
+        "z": "7a2a6eb5067de0a9",
+        "name": "ask_mood",
+        "action": "ask_mood",
+        "errtocatch": false,
+        "slots": [
+            {
+                "slotname": "location",
+                "slotname-type": "str",
+                "slotvalue": "Dubai",
+                "slotvalue-type": "str"
+            }
+        ],
+        "x": 120,
+        "y": 220,
+        "wires": [
+            [
+                "be97b0943dd4436c"
+            ]
+        ]
+    },
+    {
+        "id": "38d10f7022497183",
+        "type": "simrasa",
+        "z": "7a2a6eb5067de0a9",
+        "name": "action_weather",
+        "action": "action_weather",
+        "errtocatch": false,
+        "slots": [
+            {
+                "slotname": "location",
+                "slotname-type": "str",
+                "slotvalue": "berlin",
+                "slotvalue-type": "str"
+            }
+        ],
+        "x": 140,
+        "y": 100,
+        "wires": [
+            [
+                "be97b0943dd4436c"
+            ]
+        ]
+    },
+    {
+        "id": "6c2651173304678e",
+        "type": "comment",
+        "z": "7a2a6eb5067de0a9",
+        "name": "Example flow",
+        "info": "Click a `simrasa` input node to test the corresponding action.\nActivate the `Http in` node to accept action requests from rasa.\nYou need to provide a working API key for weatherstack in the  template node.",
+        "x": 560,
+        "y": 60,
+        "wires": []
+    }
+]

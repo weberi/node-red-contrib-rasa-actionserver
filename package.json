@@ -17,7 +17,7 @@
     "rasa action server"
   ],
   "author": "weberi",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "node-red": {
     "nodes": {
       "sendtext": "sendtext.js",
@@ -25,7 +25,8 @@
       "sendextra": "sendextra.js",
       "setslots": "setslots.js",
       "init": "init.js",
-      "finish": "finish.js"
+      "finish": "finish.js",
+      "simrasa": "simrasa.js"
     }
   },
   "dependencies": {},

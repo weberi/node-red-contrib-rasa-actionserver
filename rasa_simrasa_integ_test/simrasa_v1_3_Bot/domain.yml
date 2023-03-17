@@ -1,0 +1,37 @@
+version: '3.0'
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
+intents:
+- test_action_weather
+- test_action_generalinfo
+- test_set_moodslot
+- test_ask_mood
+slots:
+  location:
+    type: text
+    initial_value: Paris
+    influence_conversation: false
+    mappings:
+    - type: custom
+  mood:
+    type: text
+    influence_conversation: false
+    mappings:
+    - type: custom      
+  moodscale:
+    type: float
+    initial_value: 0
+    influence_conversation: false
+    mappings:
+    - type: custom   
+responses:
+  utter_ok:
+  - text: ok 
+  utter_mood_slots:
+  - text: the mood is {mood}, the scale is {moodscale}
+actions:
+- action_weather
+- action_generalinfo
+- set_moodslot
+- ask_mood

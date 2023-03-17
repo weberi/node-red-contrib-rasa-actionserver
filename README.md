@@ -1,10 +1,10 @@
 # Rasa Action Server on Node-RED
-Rasa action server on Node-RED (or short ``rasaas`` is a set of nodes that can be used to implement an action server for Rasa-based chatbots. 
-The current version of Rasa Action Server on Node-RED is developed and tested with Rasa 3 and Node-RED v2.1.5.
+Rasa action server on Node-RED (or short ``rasaas`` ) is a set of nodes that can be used to implement an action server for Rasa-based chatbots.
+The current version of Rasa Action Server on Node-RED is developed and tested with Rasa v3.05 and Node-RED v2.1.5/Node v12.20.1  and Node-RED v3.0.2/Node v16.19.1.
 ## Rasa
 Rasa is a platform for building chatbots. A dialogue with a Rasa chatbot consists of a series of intents uttered by the user and actions by which the chatbot responds to the intents. Rasa chatbots can serve as conversational assistants, meaning, users give orders in natural language, which the assistant fulfills in the background.
 The chatbot delegates actions, which it is not able to perform by built-in means, to action servers. In Rasa terminology, these actions are termed custom actions, as they have to be implemented when building the conversational assistant.
-An action server is a system component which manages the fulfillment of custom actions. 
+An action server is a system component which manages the fulfillment of custom actions.
 
 Rasa action servers run as stand-alone servers and communicate with the chatbot via rest calls. Most often, fulfilling user orders involves calling further services. Rasa brings a Python SDK that supports setting up action servers. This can require a lot of coding, which can be a barrier for non-coders. 
 Here, a platform like Node-RED, which specializes in wiring together services, APIs and even hardware devices, can be useful.  
@@ -41,7 +41,6 @@ The actions of the Rasa Action Server on Node-RED like, e.g., calls to APIs or d
 
 The results of the actions, API calls, database queries, and so on, need to be transformed into a Rasa-compatible format before sending them back to Rasa chatbot. Specifically, the Rasa chatbot expects as a result responses that it utters in its dialog with a user.
 
-
 ### Nodes generating responses
 Currently, Rasa Action Server on Node-RED has three nodes that give  support for these transformations: 
 - <code>sendtext</code>  generates a simple text response,
@@ -64,8 +63,8 @@ Slots are also sent to the action server in a custom action request. Typically, 
 Slot values can easily be read and evaluated by Node-RED nodes. 
 In some cases, it is necessary to clear or set Rasa slots within a  custom action. This is supported by the <code>setslots</code> node.
 
-### An example flow
-An example flow can be found in https://github.com/weberi/rasaas-demo-flow.
+### An node for testing 
+Further, a <code>simrasa</code> node is provided. It sends a rasa-like message to the action server so that the actions can be tested without actually running rasa. <code>simrasa</code> is short for "Simulate rasa". The node emits a <code>msg</code> object containing all elements of a rasa action request that are needed for testing. In order to test an action, the <code>http in </code> node of an action server flow is substituted by an <code>simrasa</code> node. The action can be configured in the <code>simrasa</code> node. See the example flow in the <code>rasa_simrasa_integ_test</code> folder for details.
 
 
 ### Testing
@@ -88,8 +87,24 @@ action_endpoint:
 
   - [Rasa Action Server HTTP
     API](https://rasa.com/docs/action-server/http-api-spec)
-  - Weber, Irene: [Low-code from frontend to backend: Connecting conversational user interfaces to backend services via a low-code IoT platform](https://dl.acm.org/doi/10.1145/3469595.3469632). In: CUI 2021 - 3rd Conference on Conversational User Interfaces. Bilbao (online) Spain : ACM, 2021 — DOI 10.1145/3469595.3469632. ([preprint](https://opus4.kobv.de/opus4-hs-kempten/frontdoor/index/index/docId/978))
+  - Weber, Irene: [Low-code from frontend to backend: Connecting conversational user interfaces to backend services via a low-code IoT platform](https://dl.acm.org/doi/10.1145/3469595.3469632). In: CUI 2021 - 3rd Conference on Conversational User Interfaces. Bilbao (online) Spain : ACM, 2021 — DOI 10.1145/3469595.3469632 (preprint to be found in the <em>media</em> folder).
 
 ## How to cite Rasa Action Server on Node-RED
+In academic contexts, please cite the paper mentioned above as
+
+<sup>
+@inproceedings{weberCuiLowcode2021,  
+  author = {Weber, Irene},  
+	title = {Low-code from frontend to backend: {Connecting} conversational user interfaces to backend services via a low-code {IoT} platform},   
+  booktitle = {{CUI} 2021 - 3rd {Conference} on {Conversational} {User} {Interfaces}},
+  address = {Bilbao (online) Spain},  
+	doi = {10.1145/3469595.3469632},
+	isbn = {978-1-4503-8998-3}, url = {https://dl.acm.org/doi/10.1145/3469595.3469632}, publisher = {ACM},
+	month = jul,
+	year = {2021},
+	pages = {1--5}
+}
+</sup>
+
 
 [![DOI](https://zenodo.org/badge/334833949.svg)](https://zenodo.org/badge/latestdoi/334833949)
