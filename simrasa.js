@@ -10,8 +10,6 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-const nodeRed = require("node-red");
-
 module.exports = function (RED) {
     "use strict";
 
@@ -29,6 +27,16 @@ module.exports = function (RED) {
             let slots = this.slots; 
             let action = this.action;
             let errtocatch = this.errtocatch;
+
+            if (!action || action.trim() === "") {
+                node.warn("SimRasa Node: Action is missing. Please configure an action in the node settings.");
+                if (errtocatch) {
+                    node.error("SimRasa Node: Missing action.", msg);
+                    done(new Error("SimRasa Node: Missing action."));
+                    return;
+                }
+            }
+
 
             if (msg.__user_inject_props__ && msg.__user_inject_props__.hasOwnProperty("next_action") && msg.__user_inject_props__.hasOwnProperty("slots")) {  // Array.isArray(msg.__user_inject_props__)) {
                 action = msg.__user_inject_props__["next_action"];

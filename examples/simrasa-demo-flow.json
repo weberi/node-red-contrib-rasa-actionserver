@@ -1,0 +1,161 @@
+[
+    {
+        "id": "b82219eabc977146",
+        "type": "simrasa",
+        "z": "039d55cbf649dc40",
+        "name": "",
+        "action": "some_action",
+        "errtocatch": false,
+        "slots": [
+            {
+                "slotname": "location",
+                "slotname-type": "str",
+                "slotvalue": "Berlin",
+                "slotvalue-type": "str"
+            }
+        ],
+        "x": 170,
+        "y": 60,
+        "wires": [
+            [
+                "35d6951107d050a0"
+            ]
+        ]
+    },
+    {
+        "id": "35d6951107d050a0",
+        "type": "init",
+        "z": "039d55cbf649dc40",
+        "name": "",
+        "x": 310,
+        "y": 120,
+        "wires": [
+            [
+                "e8806d6d2cca28a8"
+            ]
+        ]
+    },
+    {
+        "id": "e8806d6d2cca28a8",
+        "type": "template",
+        "z": "039d55cbf649dc40",
+        "name": "",
+        "field": "url",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "https://en.wikipedia.org/w/api.php?action=opensearch&limit=1&namespace=0&format=json&search={{slots.location}}",
+        "output": "str",
+        "x": 440,
+        "y": 120,
+        "wires": [
+            [
+                "31553d2c7681a571"
+            ]
+        ]
+    },
+    {
+        "id": "31553d2c7681a571",
+        "type": "http request",
+        "z": "039d55cbf649dc40",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 590,
+        "y": 120,
+        "wires": [
+            [
+                "c9d614e98b1ec9b8"
+            ]
+        ]
+    },
+    {
+        "id": "c9d614e98b1ec9b8",
+        "type": "sendextra",
+        "z": "039d55cbf649dc40",
+        "name": "",
+        "position": "",
+        "positionType": "num",
+        "text": "You can find info here!",
+        "textType": "str",
+        "image": "",
+        "imageType": "str",
+        "attachment": "payload[3][0]",
+        "attachmentType": "msg",
+        "senderr": false,
+        "x": 740,
+        "y": 120,
+        "wires": [
+            [
+                "ecddc323b33832dc"
+            ]
+        ]
+    },
+    {
+        "id": "ecddc323b33832dc",
+        "type": "finish",
+        "z": "039d55cbf649dc40",
+        "name": "",
+        "x": 870,
+        "y": 120,
+        "wires": [
+            [
+                "3f879572c79059d1"
+            ]
+        ]
+    },
+    {
+        "id": "3f879572c79059d1",
+        "type": "debug",
+        "z": "039d55cbf649dc40",
+        "name": "msg.payload",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 970,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "9becf6602a92b5af",
+        "type": "http in",
+        "z": "039d55cbf649dc40",
+        "name": "",
+        "url": "/webhook",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 160,
+        "y": 180,
+        "wires": [
+            [
+                "35d6951107d050a0"
+            ]
+        ]
+    },
+    {
+        "id": "7704ba2aaaa27434",
+        "type": "http response",
+        "z": "039d55cbf649dc40",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 970,
+        "y": 180,
+        "wires": []
+    }
+]

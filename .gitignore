@@ -8,5 +8,5 @@ Node-REDCodingNotes.md
 node-red-contrib-rasa-actionserver-*.tgz
 .gitignore
 .npmignore
-
+package-lock.json
 
